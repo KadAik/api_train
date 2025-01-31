@@ -8,6 +8,8 @@ import inflect
 
 p = inflect.engine()
 
+
+
 def image_path(instance, filename):
     """ Return the image path as a string based on the app name and the model name."""
     app_name = instance._meta.app_label
@@ -55,6 +57,7 @@ class Book(models.Model):
                                       '">ISBN number</a>'
                             )
     genre = models.ManyToManyField(Genre, help_text="Select a genre for this book")
+    language = models.ForeignKey('Language', on_delete=models.SET_NULL, null=True)
     
     def __str__(self):
         """String for representing the Model object."""
@@ -64,7 +67,7 @@ class Book(models.Model):
         """Returns the URL to access a detail record for this book."""
         return reverse('book-detail', args=[str(self.id)])
     
-    
+      
 
 class BookInstance(models.Model):
     """Model representing a specific copy of a book (i.e. that can be borrowed from the library)."""
@@ -98,6 +101,7 @@ class BookInstance(models.Model):
         return f'{self.id} ({self.book.title})'
 
 
+
 class Author(models.Model):
     """Model representing an author."""
     
@@ -116,3 +120,28 @@ class Author(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.last_name}, {self.first_name}'
+
+
+
+class Language(models.Model):
+    """Model representing a Language (e.g. English, French, Japanese, etc.)"""
+    name = models.CharField(max_length=200,
+                            unique=True,
+                            help_text="Enter the book's natural language (e.g. English, French, Japanese etc.)")
+
+    def get_absolute_url(self):
+        """Returns the url to access a particular language instance."""
+        return reverse('language-detail', args=[str(self.id)])
+
+    def __str__(self):
+        """String for representing the Model object (in Admin site etc.)"""
+        return self.name
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                Lower('name'),
+                name='language_name_case_insensitive_unique',
+                violation_error_message = "Language already exists (case insensitive match)"
+            ),
+        ]
