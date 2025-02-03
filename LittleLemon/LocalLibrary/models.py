@@ -49,7 +49,7 @@ class Genre(models.Model):
 class Book(models.Model):
     """Model representing a book (but not a specific copy of a book)."""
     title = models.CharField(max_length=255)
-    author = models.ForeignKey("Author", on_delete=models.RESTRICT, null=True)
+    author = models.ForeignKey("Author", on_delete=models.RESTRICT, null=True, verbose_name="written by")
     summary = models.TextField(max_length=1000, help_text="Enter a brief description of the book")
     ISBN = models.CharField('ISBN', max_length=13,
                             unique=True,
