@@ -1,0 +1,72 @@
+{% extends 'LocalLibrary/base_generic.html' %}
+
+{% block content %}
+
+<div class="card text-center mt-5">
+    <div class="card-header"></div>
+    <div class="card-body">
+        <h4 class="card-title">{{ book.title }}</h4>
+        <p class="card-text" style="height: 150px; overflow-y: auto;"><i>{{ book.summary }}</i></p>
+        <ul style="text-align: left; margin-left: 30%;">
+            <li><strong>Author: </strong><a href="{{ book.author.get_absolute_url }}">{{ book.author }}</a></li>
+            <li><strong>ISBN: </strong>{{ book.ISBN }}</li>
+            <li><strong>Genre: </strong>{{ book.genre.all|join:"," }}</li>
+            <li><strong>Languages: </strong>{{ book.language }}</li>
+        </ul>
+        
+        <div class="accordion" id="bookCopies">
+            <div class="accordion-item">
+                <div class="accordion-header d-flex justify-content-center">
+                    <button 
+                        class="accordion-button"
+                        type="button"
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#collapsableField" 
+                        aria-expanded="true" 
+                        aria-controls="collapsableField"
+                    >
+                        Copies : &nbsp;<span class="text-danger">{{ book.bookinstance_set.count }}</span>
+                    </button>
+
+                </div>
+                <div id="collapsableField" class="accordion-collapse collapse hide" data-bs-parent="#bookCopies">
+                    <div class="accordion-body d-flex gap-3">
+                        
+                        {% for copy in book.bookinstance_set.all %}
+                        <div style="max-width: 18rem;"
+                            class="card mb-3 {% if copy.status == 'a' %}border-success{% elif copy.status == 'm' %}border-danger{% else %}border-primary{% endif %}">
+                            <div class="card-header {% if copy.status == 'a' %}text-success{% elif copy.status == 'm' %}text-danger{% else %}text-primary{% endif %}">{{ copy.get_status_display }}</div>
+                            <div class="card-body text-primary">
+                                <div class="card" style="width: 100%;">
+
+                                    <img src="{{ copy.cover_page.url }}" class="card-img-top" style="" alt="...">
+                                    <div class="card-body">
+                                        <ul class="card-text" style="text-align: left;">
+                                            
+                                            {% if copy.status != 'a' %}
+                                                <li><strong>Due to be returned: </strong>{{ copy.due_back }}</li>
+                                            {% endif %}
+                                            <li><strong>Id: </strong>{{ copy.id }}</li>
+                                            <li><strong>Imprint: </strong>{{ copy.imprint }}</li>
+                                            
+                                        </ul>
+                                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                                    </div>
+                                  </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                            <p>No copies available.</p>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="card-footer text-muted">---</div>
+</div>
+
+  
+{% endblock content %}

@@ -17,4 +17,6 @@
     <li><strong>Copies available:</strong> {{ num_instances_available }}</li>
     <li><strong>Authors:</strong> {{ num_authors }}</li>
   </ul>
+
+  <p class="text-success">You have visited this site {{ num_visits }} time{{ num_visits|pluralize }}</p>
 {% endblock content %}

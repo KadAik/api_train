@@ -2,8 +2,6 @@
 
 {% block content %}
 
-{% if books %}
-    
 <table class="table">
     <thead>
       <tr>
@@ -15,23 +13,22 @@
     </thead>
     <tbody>
         
-        {% for book in books %}
-
+        {% for book in book_list %}
         <tr>
             <th scope="row">{{ forloop.counter }}</th>
-            <td>{{ book.title }}</td>
-            <td>{{ book.author }}</td>
+            <td><a href="{{book.get_absolute_url}}">{{ book.title }}</a></td>
+            <td><a href="{{ book.author.get_absolute_url }}">{{ book.author }}</a></td>
             <td>{{ book.language }}</td>
-          </tr>
-            
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4"><i>There is no book available in the library</i></td>
+        </tr>
         {% endfor %}
-            
     </tbody>
-  </table>
+</table>
+
         
-{% else %}
-    <h2>No books available</h2>
-{% endif %}
     
   
 {% endblock content %}
