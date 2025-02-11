@@ -22,6 +22,21 @@
                 <li><a href="{% url 'LocalLibrary:index' %}">Home</a></li>
                 <li><a href="{% url 'LocalLibrary:books' %}">All books</a></li>
                 <li><a href="{% url 'LocalLibrary:authors' %}">All authors</a></li>
+                <hr>
+                
+                {% if user.is_authenticated %}
+                <li>Logged in as <strong>{{user.get_username|title}}</strong></li>
+                <li><a href="{% url 'LocalLibrary:my-borrowed' %}">My Loans</a></li>
+                <li>
+                  <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link mt-3 ms-0 p-0">Log Out !</button>
+                  </form>
+                </li>
+                {% else %}
+                  <li><a href="{% url 'login' %}">Log in ?</a></li>
+                {% endif %}
+           
               </ul>
             {% endblock %}
           </div>

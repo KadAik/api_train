@@ -2,6 +2,10 @@ from django.db import models
 from django.urls import reverse
 from django.db.models import UniqueConstraint
 from django.db.models.functions import Lower
+from django.contrib.auth.models import AbstractUser
+from django.conf import settings
+
+from datetime import date
 
 import uuid
 import inflect
@@ -14,7 +18,7 @@ def image_path(instance, filename):
     """ Return the image path as a string based on the app name and the model name."""
     app_name = instance._meta.app_label
     model_name = instance._meta.model_name
-    return f"{app_name}/{p.plural(model_name)}/{filename}"
+    return f"{app_name}/{p.plural(model_name)}/covers/{filename}"
 
 
 
@@ -77,6 +81,7 @@ class BookInstance(models.Model):
     imprint = models.CharField(max_length=200)
     due_back = models.DateField(null=True, blank=True)
     cover_page = models.ImageField(upload_to=image_path, blank=True, null=True)
+    borrower = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
 
     LOAN_STATUS = (
         ('m', 'Maintenance'),
@@ -99,6 +104,11 @@ class BookInstance(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.id} ({self.book.title})'
+    
+    @property
+    def is_overdue(self):
+        """Determines if the book is overdue based on due date and current date."""
+        return bool(self.due_back and date.today() > self.due_back)
 
 
 
@@ -145,3 +155,4 @@ class Language(models.Model):
                 violation_error_message = "Language already exists (case insensitive match)"
             ),
         ]
+    

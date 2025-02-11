@@ -1,0 +1,36 @@
+{% extends 'LocalLibrary/base_generic.html' %}
+
+{% block content %}
+
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Title</th>
+        <th scope="col">Due back</th>
+      </tr>
+    </thead>
+    <tbody>
+        
+        {% for bookinstance in bookinstance_borrowed_list %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td><a href="{{bookinstance.book.get_absolute_url}}">{{ bookinstance.book.title }}</a></td>
+            <td><a href="{{ book.author.get_absolute_url }}" class="
+            {% if bookinstance.is_overdue %}
+                text-danger
+            {% endif %}
+                ">{{ bookinstance.due_back }}</a></td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4"><i>You don't have books on loan</i></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+        
+    
+  
+{% endblock content %}

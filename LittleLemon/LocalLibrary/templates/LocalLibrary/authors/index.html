@@ -20,7 +20,7 @@
             <td><a href="{{ book.author.get_absolute_url }}">{{ author.first_name }}</a></td>
             <td><a href="{{ book.author.get_absolute_url }}">{{ author.last_name }}</a></td>
             <td>{{ author.date_of_birth }}</td>
-            <td>{{ author.date_of_death }}</td>
+            <td>{{ author.date_of_death|default:"-" }}</td>
         </tr>
         {% empty %}
         <tr>

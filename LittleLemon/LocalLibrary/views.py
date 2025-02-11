@@ -5,8 +5,11 @@ from django.views import generic
 from pprint import pprint
 from django.core.paginator import Paginator
 from django.http import HttpRequest
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
+@login_required
 def index(request: HttpRequest):
     """ Render the home page."""
     # Get visit count
@@ -34,7 +37,7 @@ def index(request: HttpRequest):
     return render(request, 'LocalLibrary/index.html', context=context)
 
 
-class BookListView(generic.ListView):
+class BookListView(LoginRequiredMixin, generic.ListView):
     model = Book
     template_name = 'LocalLibrary/books/index.html'
     # context_object_name = 'book_list' : The view passes the context (list of books)
@@ -49,14 +52,14 @@ class BookListView(generic.ListView):
     
     
 
-class BookDetailView(generic.DetailView):
+class BookDetailView(LoginRequiredMixin, generic.DetailView):
     model = Book
     template_name = 'LocalLibrary/books/book_detail.html'
     
 
 
 
-class AuthorView(View):
+class AuthorView(LoginRequiredMixin, View):
     """Class to handle all requests associated with authors."""
     
     template = 'LocalLibrary/authors/index.html'
@@ -69,6 +72,21 @@ class AuthorView(View):
         context['is_paginated'] = page_obj.has_other_pages()
         return render(request, self.template, context)
     
-class AuthorDetailView(generic.DetailView):
+class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
     model = Author
     template_name = 'LocalLibrary/authors/author_detail.html'
+    
+    
+    
+class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
+    """ Generic class-based view listing books on loan to current user. """
+    model = BookInstance
+    template_name = 'LocalLibrary/books/bookinstance_list_borrowed_by_user.html'
+    context_object_name = 'bookinstance_borrowed_list'
+    
+    def get_queryset(self):
+        return (
+            BookInstance.objects.filter(borrower=self.request.user)
+            .filter(status__exact='o')
+            .order_by('due_back')
+        )
