@@ -4,7 +4,10 @@ from django.views import generic
 from pprint import pprint
 from django.core.paginator import Paginator
 from django.http import HttpRequest
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import (
+    login_required,
+    permission_required
+)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import (
@@ -112,6 +115,8 @@ class BooksOnLoanListView(PermissionRequiredMixin, generic.ListView):
        )
        
 
+@login_required
+@permission_required('LocalLibrary.can_mark_returned')
 def renew_book_librarian(request: HttpRequest, pk):
     """View function for renewing a specific BookInstance by librarian."""
     book_instance = get_object_or_404(BookInstance, pk=pk)
