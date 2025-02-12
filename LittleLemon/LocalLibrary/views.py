@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from .models import Book, BookInstance, Author
 from django.views import View
 from django.views import generic
@@ -7,7 +6,16 @@ from django.core.paginator import Paginator
 from django.http import HttpRequest
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+    render
+    )
+from django.urls import reverse
 
+from .forms import RenewBookForm
+import datetime
 
 @login_required
 def index(request: HttpRequest):
@@ -81,7 +89,7 @@ class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
 class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
     """ Generic class-based view listing books on loan to current user. """
     model = BookInstance
-    template_name = 'LocalLibrary/books/bookinstance_list_borrowed_by_user.html'
+    template_name = 'LocalLibrary/bookinstances/bookinstance_list_borrowed_by_user.html'
     context_object_name = 'bookinstance_borrowed_list'
     
     def get_queryset(self):
@@ -90,3 +98,41 @@ class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
             .filter(status__exact='o')
             .order_by('due_back')
         )
+        
+    
+class BooksOnLoanListView(PermissionRequiredMixin, generic.ListView):
+    permission_required = 'LocalLibrary.can_mark_returned'
+    model = BookInstance
+    template_name = 'LocalLibrary/bookinstances/bookinstance_list_on_loan.html'
+    context_object_name = 'bookinstance_on_loan_list'
+    
+    def get_queryset(self):
+       return (
+           BookInstance.objects.filter(status='o')
+       )
+       
+
+def renew_book_librarian(request: HttpRequest, pk):
+    """View function for renewing a specific BookInstance by librarian."""
+    book_instance = get_object_or_404(BookInstance, pk=pk)
+    
+    if request.method == 'POST':
+        
+        form = RenewBookForm(request.POST)
+        
+        if form.is_valid():
+            book_instance.due_back = form.cleaned_data['renewal_date']
+            book_instance.save()
+            
+            return redirect(reverse('LocalLibrary:all-borrowed'))
+        
+    else:
+        proposed_renewal_date = (datetime.date.today() + datetime.timedelta(weeks=3)).strftime("%Y-%m-%d")
+        form = RenewBookForm(initial={"renewal_date": proposed_renewal_date})
+        
+    context = {
+        'form': form,
+        'book_instance': book_instance
+    }
+    
+    return render(request, 'LocalLibrary/bookinstances/book_renew_librarian.html', context)

@@ -43,7 +43,7 @@ class Genre(models.Model):
         constraints = [
                 UniqueConstraint(
                     Lower('name'),
-                    name='genre_name_case_insensitive_unqie',
+                    name='genre_name_case_insensitive_unique',
                     violation_error_message="Genre already exists (case insensitive match)"
                 ),
         ]
@@ -100,6 +100,9 @@ class BookInstance(models.Model):
 
     class Meta:
         ordering = ['due_back']
+        permissions = (
+            ("can_mark_returned", "Set book as returned"),
+        )
 
     def __str__(self):
         """String for representing the Model object."""
