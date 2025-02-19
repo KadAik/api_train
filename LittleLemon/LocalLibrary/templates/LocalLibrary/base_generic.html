@@ -38,10 +38,16 @@
                 {% endif %}
 
                 
-                {% if perms.LocalLibrary.can_mark_returned %}
+                {% if user.is_staff %}
                   <li class="mt-5">Staff</li>
                   <li><a href="{% url 'LocalLibrary:all-borrowed' %}">All Borrowed</a></li>
                 {% endif %}
+
+                
+                {% if perms.LocalLibrary.add_author %}
+                  <li><a href="{% url 'LocalLibrary:author-create' %}">Add Author</a></li>
+                {% endif %}
+                  
                   
            
               </ul>

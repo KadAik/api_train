@@ -15,7 +15,7 @@ from django.shortcuts import (
     redirect,
     render
     )
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
 from .forms import RenewBookForm
 import datetime
@@ -67,27 +67,7 @@ class BookDetailView(LoginRequiredMixin, generic.DetailView):
     model = Book
     template_name = 'LocalLibrary/books/book_detail.html'
     
-
-
-
-class AuthorView(LoginRequiredMixin, View):
-    """Class to handle all requests associated with authors."""
-    
-    template = 'LocalLibrary/authors/index.html'
-    def get(self, request, *args, **kwargs):
-        authors = Author.objects.all()
-        paginator  = Paginator(authors, 3)
-        page_number = request.GET.get("page")
-        page_obj = paginator.get_page(page_number)
-        context = {'page_obj': page_obj, 'author_list': page_obj.object_list}
-        context['is_paginated'] = page_obj.has_other_pages()
-        return render(request, self.template, context)
-    
-class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
-    model = Author
-    template_name = 'LocalLibrary/authors/author_detail.html'
-    
-    
+       
     
 class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
     """ Generic class-based view listing books on loan to current user. """
@@ -141,3 +121,47 @@ def renew_book_librarian(request: HttpRequest, pk):
     }
     
     return render(request, 'LocalLibrary/bookinstances/book_renew_librarian.html', context)
+
+
+class AuthorView(LoginRequiredMixin, View):
+    """Class to handle all requests associated with authors."""
+    
+    template = 'LocalLibrary/authors/index.html'
+    def get(self, request, *args, **kwargs):
+        authors = Author.objects.all()
+        paginator  = Paginator(authors, 3)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+        context = {'page_obj': page_obj, 'author_list': page_obj.object_list}
+        context['is_paginated'] = page_obj.has_other_pages()
+        return render(request, self.template, context)
+    
+class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Author
+    template_name = 'LocalLibrary/authors/author_detail.html'
+    
+class AuthorCreateView(PermissionRequiredMixin, generic.edit.CreateView):
+    permission_required = 'LocalLibrary.add_author'
+    model = Author
+    fields = ['first_name', 'last_name', 'date_of_birth', 'date_of_death']
+    # initial = {'date_of_death': '11/12/2022'}
+    template_name = 'LocalLibrary/authors/author_form.html'
+    
+class AuthorUpdateView(PermissionRequiredMixin, generic.edit.UpdateView):
+    permission_required = 'LocalLibrary.change_author'
+    model = Author
+    fields = ['first_name', 'last_name', 'date_of_birth', 'date_of_death']
+    template_name = 'LocalLibrary/authors/author_form.html'
+    
+class AuthorDeleteView(PermissionRequiredMixin, generic.edit.DeleteView):
+    permission_required = 'LocalLibrary.delete_author'
+    model = Author
+    success_url = reverse_lazy('LocalLibrary:authors')
+    template_name = 'LocalLibrary/authors/author_confirm_delete.html'
+    
+    def form_valid(self, form):
+        try:
+            self.object.delete()
+            return redirect(self.success_url)
+        except Exception as e:
+            return redirect(reverse('LocalLibrary:author-delete', kwargs={'pk': self.object.pk}))
