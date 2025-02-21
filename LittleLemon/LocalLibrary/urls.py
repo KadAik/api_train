@@ -20,3 +20,9 @@ urlpatterns += [
     path('authors/<int:pk>/update/', views.AuthorUpdateView.as_view(), name='author-update'),
     path('authors/<int:pk>/delete/', views.AuthorDeleteView.as_view(), name='author-delete'),
 ]
+
+urlpatterns += [
+    path('book/create', views.BookCreateView.as_view(), name='book-create'),
+    path('book/<int:pk>/update', views.BookUpdateView.as_view(), name='book-update'),
+    path('book/<int:pk>/delete', views.BookDeleteView.as_view(), name='book-delete'),
+]

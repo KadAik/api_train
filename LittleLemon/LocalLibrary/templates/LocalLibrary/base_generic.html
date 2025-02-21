@@ -45,7 +45,11 @@
 
                 
                 {% if perms.LocalLibrary.add_author %}
-                  <li><a href="{% url 'LocalLibrary:author-create' %}">Add Author</a></li>
+                  <li><a href="{% url 'LocalLibrary:author-create' %}">Add an Author</a></li>
+                {% endif %}
+
+                {% if perms.LocalLibrary.add_book %}
+                  <li><a href="{% url 'LocalLibrary:book-create' %}">Add a Book</a></li>
                 {% endif %}
                   
                   

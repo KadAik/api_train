@@ -9,6 +9,11 @@
         <th scope="col">Title</th>
         <th scope="col">Author</th>
         <th scope="col">Language</th>
+        
+        {% if perms.LocalLibrary.delete_book %}
+          <th scopr="col">Action</th>
+        {% endif %}
+          
       </tr>
     </thead>
     <tbody>
@@ -19,6 +24,31 @@
             <td><a href="{{book.get_absolute_url}}">{{ book.title }}</a></td>
             <td><a href="{{ book.author.get_absolute_url }}">{{ book.author }}</a></td>
             <td>{{ book.language }}</td>
+            {% if perms.LocalLibrary.delete_book %}
+              <td>
+                <div class="dropdown">
+                  <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    Action
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-item"
+                      {% if not perms.LocalLibrary.update_delete %}
+                        disabled
+                      {% endif %}
+                    >
+                      <a href="{% url 'LocalLibrary:book-update' book.id %}">Update</a>
+                    </li>
+                    <li class="dropdown-item"
+                      {% if not perms.LocalLibrary.delete_book %}
+                        disabled
+                      {% endif %}
+                    >
+                      <a href="{% url 'LocalLibrary:book-delete' book.id %}" class="text-danger">Delete</a>
+                    </li>
+                  </ul>
+                </div>
+              </td>
+            {% endif %}
         </tr>
         {% empty %}
         <tr>

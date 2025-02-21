@@ -16,11 +16,12 @@
         <tr>
             <th scope="row">{{ forloop.counter }}</th>
             <td><a href="{{bookinstance.book.get_absolute_url}}">{{ bookinstance.book.title }}</a></td>
-            <td><a href="{{ book.author.get_absolute_url }}" class="
+            <td class="
             {% if bookinstance.is_overdue %}
                 text-danger
             {% endif %}
-                ">{{ bookinstance.due_back }}</a></td>
+                ">{{ bookinstance.due_back }}
+            </td>
         </tr>
         {% empty %}
         <tr>

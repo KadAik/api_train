@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 import datetime
 
 class RenewBookForm(forms.Form):
+    """ Form for a librarian to renew a book."""
     renewal_date = forms.DateField(help_text="Enter a date between now and 4 weeks (default 3).")
     
     # renewal_date validation by overriden the default method
