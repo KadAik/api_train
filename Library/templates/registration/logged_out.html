@@ -1,0 +1,6 @@
+{% extends 'registration/base_auth.html' %}
+
+{% block content %}
+  <p>You have logged out.</p>
+    <a href="{% url 'login' %}">Click here </a> to log in again.
+{% endblock content %}
