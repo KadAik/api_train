@@ -5,3 +5,4 @@ inflect==7.5.0
 psycopg2==2.9.10
 python-dotenv==1.0.1
 whitenoise==6.9.0
+pillow==11.1.0

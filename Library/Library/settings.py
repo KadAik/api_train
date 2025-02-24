@@ -34,7 +34,10 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-avwrencxbgp4$=
 # DEBUG = True
 DEBUG = os.getenv('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'kadolphe.pythonanywhere.com',   # or just the base url : '.pythonanywhere.com'
+    '127.0.0.1',
+]
 
 
 # Application definition
@@ -181,3 +184,9 @@ if 'DATABASE_URL' in os.environ:
         conn_max_age=500,
         conn_health_checks=True,
     )
+    
+    
+# Since we are using csrf protection, for deployment purposes , should set :
+CSRF_TRUSTED_ORIGINS = [
+    'https://kadolphe.pythonanywhere.com'       # can also instead set the base url : 'https://*.pythonanywhere.com'
+]
