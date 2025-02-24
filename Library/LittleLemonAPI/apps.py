@@ -1,6 +1,0 @@
-from django.apps import AppConfig
-
-
-class LibraryapiConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'LibraryAPI'
