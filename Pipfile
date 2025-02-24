@@ -10,9 +10,8 @@ pillow = "*"
 python-dotenv = "*"
 gunicorn = "*"
 dj-database-url = "*"
-psycopg2 = "*"
-psycopg2-binary = "*"
 whitenoise = "*"
+psycopg2 = "*"
 
 [dev-packages]
 
